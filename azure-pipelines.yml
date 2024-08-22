@@ -18,8 +18,8 @@ variables:
   imagePullSecret: 'fluxv2201619d6-auth'
   storageaccount: 'am4prodvs4core4shell'
   sacontainername: 'trivy-scan-reports'
-  dockerfilePath: '$(Build.SourcesDirectory)/ACR+Trivy/Dockerfile'
-  #dockerfilePath: '**/Dockerfile'
+  #dockerfilePath: '$(Build.SourcesDirectory)/ACR+Trivy/Dockerfile'
+  dockerfilePath: '**/Dockerfile'
   serviceconn: 'amcloud-cicd-service-connection' 
   target: $(build.artifactstagingdirectory)
   artifact: AM
