@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: nginxscanned 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginxscanned
+  template:
+    metadata:
+      labels:
+        app: nginxscanned 
+    spec:
+      containers:
+        - name: nginxscanned 
+          image: fluxv2.azurecr.io/nginxscanned
+          ports:
+          - containerPort: 80
