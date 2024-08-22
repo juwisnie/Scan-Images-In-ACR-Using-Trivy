@@ -44,8 +44,8 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
-    #- upload: manifests
-    #  artifact: manifests
+    - upload: manifests
+      artifact: manifests
     
 #######################################
 # Download and Install Aquasec Trivy:-
