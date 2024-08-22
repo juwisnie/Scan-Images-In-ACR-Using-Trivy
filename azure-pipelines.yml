@@ -76,11 +76,11 @@ stages:
 ##########################
 # Publish the Artifacts:-
 ##########################
-    - task: PublishBuildArtifacts@1
-      displayName: PUBLISH ARTIFACTS
-      inputs:
-        targetPath: '$(target)'
-        artifactName: '$(artifact)'
+#    - task: PublishBuildArtifacts@1
+#      displayName: PUBLISH ARTIFACTS
+#      inputs:
+#        targetPath: '$(target)'
+#        artifactName: '$(artifact)'
 
 ######################################
 # Download the Published Artifacts:-
@@ -94,18 +94,18 @@ stages:
 ###################################################################################
 # It works on Linux Build Agent because of the Date Format
 ###################################################################################
-    - task: AzureCLI@1
-      displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
-      inputs:
-        azureSubscription: '$(serviceconn)'
-        scriptType: ps
-        scriptLocation: inlineScript
-        inlineScript: |
-          az storage blob upload-batch -d $(sacontainername)/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --account-key $(az storage account keys list -g $(resourcegroup) -n $(storageaccount) --query [0].value -o tsv) -s $(System.ArtifactsDirectory)/AM
-
-    - upload: manifests
-      artifact: manifests
-
+#    - task: AzureCLI@1
+#      displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
+#      inputs:
+#        azureSubscription: '$(serviceconn)'
+#        scriptType: ps
+#        scriptLocation: inlineScript
+#        inlineScript: |
+#          az storage blob upload-batch -d $(sacontainername)/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --account-key $(az storage account keys list -g $(resourcegroup) -n $(storageaccount) --query [0].value -o tsv) -s $(System.ArtifactsDirectory)/AM
+#
+#    - upload: manifests
+#     artifact: manifests
+#
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
