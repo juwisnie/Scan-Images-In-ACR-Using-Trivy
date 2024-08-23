@@ -95,6 +95,7 @@ stages:
 # It works on Linux Build Agent because of the Date Format
 ###################################################################################
     - task: AzureCLI@2
+      displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
       inputs:
         azureSubscription: '$(serviceconn)'
         scriptType: 'pscore'
