@@ -19,7 +19,7 @@ variables:
   storageaccount: 'poctrivyscan'
   sacontainername: 'trivy-scan-reports'
   dockerfilePath: '**/Dockerfile'
-  serviceconn: 'amcloud-cicd-service-connection' 
+  serviceconn: 'cicd-service-connection' 
   target: $(build.artifactstagingdirectory)
   artifact: AM
   resourcegroup: 'flux-demo'
