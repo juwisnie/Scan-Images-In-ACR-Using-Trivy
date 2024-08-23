@@ -91,6 +91,8 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         downloadPath: '$(System.ArtifactsDirectory)'
+    - upload: manifests
+      artifact: manifests
 ###################################################################################
 # It works on Linux Build Agent because of the Date Format
 ###################################################################################
