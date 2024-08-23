@@ -16,13 +16,13 @@ variables:
   containerRegistry: 'fluxv2.azurecr.io'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'fluxv2201619d6-auth'
-  storageaccount: 'am4prodvs4core4shell'
+  storageaccount: 'poctrivyscan'
   sacontainername: 'trivy-scan-reports'
-  #dockerfilePath: '$(Build.SourcesDirectory)/ACR+Trivy/Dockerfile'
   dockerfilePath: '**/Dockerfile'
   serviceconn: 'amcloud-cicd-service-connection' 
   target: $(build.artifactstagingdirectory)
   artifact: AM
+  resourcegroup: 'flux-demo'
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -94,18 +94,14 @@ stages:
 ###################################################################################
 # It works on Linux Build Agent because of the Date Format
 ###################################################################################
-#    - task: AzureCLI@1
-#      displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
-#      inputs:
-#        azureSubscription: '$(serviceconn)'
-#        scriptType: ps
-#        scriptLocation: inlineScript
-#        inlineScript: |
-#          az storage blob upload-batch -d $(sacontainername)/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --account-key $(az storage account keys list -g $(resourcegroup) -n $(storageaccount) --query [0].value -o tsv) -s $(System.ArtifactsDirectory)/AM
-#
-#    - upload: manifests
-#     artifact: manifests
-#
+    - task: AzureCLI@1
+      displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
+      inputs:
+        azureSubscription: '$(serviceconn)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          az storage blob upload-batch -d $(sacontainername)/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --account-key $(az storage account keys list -g $(resourcegroup) -n $(storageaccount) --query [0].value -o tsv) -s $(System.ArtifactsDirectory)/AM
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
