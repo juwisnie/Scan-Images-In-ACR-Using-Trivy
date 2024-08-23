@@ -103,7 +103,7 @@ stages:
         #scriptType: ps
         scriptLocation: inlineScript
         inlineScript: |
-          az storage blob upload-batch -d $(sacontainername) --account-name $(storageaccount) -s $(System.ArtifactsDirectory)/AM
+          az storage blob upload-batch -d $(sacontainername) --account-name $(storageaccount) -s $(Build.ArtifactStagingDirectory)/AM
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
