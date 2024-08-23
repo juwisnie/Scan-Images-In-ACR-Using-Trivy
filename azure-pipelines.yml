@@ -91,19 +91,30 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         downloadPath: '$(System.ArtifactsDirectory)'
-    - upload: manifests
-      artifact: manifests
 ###################################################################################
 # It works on Linux Build Agent because of the Date Format
 ###################################################################################
-    - task: AzureCLI@1
+    # - task: AzureCLI@1
+    #   displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
+    #   inputs:
+    #     azureSubscription: '$(serviceconn)'
+    #     #scriptType: ps
+    #     scriptLocation: inlineScript
+    #     inlineScript: |
+    #       az storage blob upload-batch -d $(sacontainername) --account-name $(storageaccount) -s $(System.ArtifactsDirectory)/AM
+    - task: AzureFileCopy@4
       displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
       inputs:
+        #SourcePath: $(System.DefaultWorkingDirectory)/_artifactAlias/drop/*
+        SourcePath: $(System.DefaultWorkingDirectory)/AM/*
         azureSubscription: '$(serviceconn)'
-        #scriptType: ps
-        scriptLocation: inlineScript
-        inlineScript: |
-          az storage blob upload-batch -d $(sacontainername) --account-name $(storageaccount) -s $(Build.ArtifactStagingDirectory)/AM
+        Destination: AzureBlob
+        storage: '$(storageaccount)'
+        ContainerName: '$(sacontainername)'
+        BlobPrefix: Trivy-scan
+        AdditionalArgumentsForBlobCopy: |
+          --recursive=true `
+          --overwrite=true
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
