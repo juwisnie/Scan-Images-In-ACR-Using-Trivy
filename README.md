@@ -1,36 +1,8 @@
-# DEVOPS + ACR + TRIVY
+# AZ DEVOPS + ACR + TRIVY (SCAN)
 
 Greetings my fellow Technology Advocates and Specialists.
 
-In this Session, I will demonstrate how to __Scan Docker Images__ in __AZURE CONTAINER REGISTRY__ with __AQUASEC TRIVY__ using __AZURE DEVOPS PIPELINES__
-
-I had the Privilege to talk on this topic in __THREE__ Azure Communities:-
-
-| __NAME OF THE AZURE COMMUNITY__ | __TYPE OF SPEAKER SESSION__ |
-| --------- | --------- |
-| __Microsoft Azure Zurich User Group__ | __In Person__ |
-| __Microsoft Azure Pakistan Community__ | __Virtual__ |
-| __Cloud Lunch and Learn__ | __Virtual__ |
- 
-| __IN-PERSON SESSION:-__ |
-| --------- |
-| I presented ACR (Architecture and Best Practices) + Scan Images in ACR Using TRIVY and DEVOPS in __MICROSOFT AZURE ZURICH USER GROUP__ Forum/Platform |
-| __Event Meetup Announcement:-__ |
-| ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/jtq9o4y4z95uziaygvp0.png) |
-| __Moment Captured with Founder of MICROSOFT AZURE ZURICH USER GROUP "MANUEL MEYER", Co-organizer "THOMAS HAFERMALZ" and Co-Speaker "MOHAMMAD NOFAL":-__ |
-| ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kcrq2xc69sw5qyr1u7jw.png) |
-| __VIRTUAL SESSION:-__ |
-| I presented ACR (Architecture and Best Practices) + Scan Images in ACR Using TRIVY and DEVOPS in __MICROSOFT AZURE PAKISTAN COMMUNITY__ Forum/Platform |
-| __Event Meetup Announcement:-__ |
-| ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/0qsjncev5uboixqnza50.png) |
-| __LIVE RECORDED SESSION:-__ |
-| __LIVE DEMO__ was Recorded as part of my Presentation. |
-| Duration of My Demo = __52 Mins 45 Secs__ |
-| [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/6fGGT1uBImw/0.jpg)](https://www.youtube.com/watch?v=6fGGT1uBImw) |
-| __VIRTUAL SESSION:-__ |
-| __LIVE DEMO__ was Recorded as part of my Presentation in __CLOUD LUNCH AND LEARN__ Forum/Platform |
-| Duration of My Demo = __44 Mins 16 Secs__ |
-| [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/0hFXX3k2YnM/0.jpg)](https://www.youtube.com/watch?v=0hFXX3k2YnM) |
+Repo with code and pipeline to  __Scan Docker Images__ in __AZURE CONTAINER REGISTRY__ with __AQUASEC TRIVY__ using __AZURE DEVOPS PIPELINES__ and deploy to __AKS__
 
 | __REQUIREMENTS:-__ |
 | --------- |
@@ -75,141 +47,19 @@ COPY . /usr/share/nginx/html
 ```
 <html>
 <head>
-    <title>TEST - ARINDAM MITRA</title>
+    <title>PoC pipe com scan - Trivy</title>
 </head>
 
 </style>
 <body>
-    <h1 style="font-size:50px; color:#000000; text-align: center">TEST - ARINDAM MITRA</h1>
+    <h1 style="font-size:50px; color:#000000; text-align: center">POC - AZ DEVOPS + TRIVY + ACR</h1>
 </body>
 </html>
 ```
 
-| __Below follows the contents of the YAML File (Azure DevOps):-__ |
+| __azure-pipelines.yml is the YAML File (Azure DevOps) with the pipeline code-__ |
 | --------- |
 
-```
-trigger:
-  none
-
-resources:
-- repo: self
-
-###############################################
-# All Declared Variables are listed below:-
-###############################################
-variables:
-  dockerRegistryServiceConnection: '52409f6c-7855-4be2-a142-7192521b3e3f'
-  imageRepository: 'amimagescantrivy'
-  containerRegistry: 'ampocapplacr.azurecr.io'
-  storageaccount: 'am4prodvs4core4shell'
-  resourcegroup: 'Demo-Blog-RG'
-  sacontainername: 'trivy-scan-reports'
-  serviceconn: 'amcloud-cicd-service-connection' 
-  dockerfilePath: '$(Build.SourcesDirectory)/ACR+Trivy/Dockerfile'
-  target: $(build.artifactstagingdirectory)
-  artifact: AM
-  tag: '$(Build.BuildId)'
-
-  vmImageName: 'ubuntu-latest'
-
-stages:
-- stage: BUILD
-  displayName: Build and Push Stage
-  jobs:
-  - job: BUILD_JOB
-    displayName: BUILD IMAGE
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-
-#####################################
-# Build and Push the Image to ACR:-
-#####################################    
-    - task: Docker@2
-      displayName: BUILD AND PUSH IMAGE TO ACR
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
-
-#######################################
-# Download and Install Aquasec Trivy:-
-#######################################
-    - task: CmdLine@2
-      displayName: DOWNLOAD AND INSTALL AQUASEC TRIVY
-      inputs:
-        script: |
-         sudo apt-get install wget apt-transport-https gnupg lsb-release
-         wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-         echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-         sudo apt-get update
-         sudo apt-get install trivy
-         trivy -v
-         pwd
-
-##################################################################################
-# Execute Trivy Scan and Copy the Scan Results in Artifacts Staging Directory:-
-##################################################################################
-    - task: CmdLine@2
-      displayName: RUN AQUASEC TRIVY SCAN AND COPY TO ARTIFACTS STAGING DIRECTORY
-      inputs:
-        script: |
-          trivy image --exit-code 0 --severity LOW,MEDIUM $(containerRegistry)/$(imageRepository):$(tag) > low-med.txt
-          trivy image --exit-code 1 --severity HIGH,CRITICAL $(containerRegistry)/$(imageRepository):$(tag) > high-critical.txt
-          ls -l
-          cp -rvf *.txt $(target)
-
-##########################
-# Publish the Artifacts:-
-##########################
-    - task: PublishBuildArtifacts@1
-      displayName: PUBLISH ARTIFACTS
-      inputs:
-        targetPath: '$(target)'
-        artifactName: '$(artifact)'
-
-######################################
-# Download the Published Artifacts:-
-######################################
-    - task: DownloadBuildArtifacts@1
-      displayName: DOWNLOAD ARTIFACTS
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        downloadPath: '$(System.ArtifactsDirectory)'
-
-#########################################################
-# The Below Code Snippet did not work because it is 
-# only supported by "Windows" Build Agent
-#########################################################    
-    # - task: AzureFileCopy@4
-    #   displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
-    #   inputs:
-    #     SourcePath: '$(System.ArtifactsDirectory)'
-    #     azureSubscription: 'amcloud-cicd-service-connection'
-    #     Destination: 'AzureBlob'
-    #     storage: '$(storageaccount)'
-    #     ContainerName: '$(sacontainername)/$(Date)'
-
-###################################################################################
-# Cmd in Line 118 - It works on Linux Build Agent because of the Date Format
-# Cmd in Line 119 - It works on Windows Build Agent because of the Date Format
-###################################################################################
-    - task: AzureCLI@1
-      displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
-      inputs:
-        azureSubscription: '$(serviceconn)'
-        scriptType: ps
-        scriptLocation: inlineScript
-        inlineScript: |
-          az storage blob upload-batch -d $(sacontainername)/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --account-key $(az storage account keys list -g $(resourcegroup) -n $(storageaccount) --query [0].value -o tsv) -s $(System.ArtifactsDirectory)/AM
-#         az storage blob upload-batch -d trivy-scan-reports/$(Get-Date -Format dd-MM-yyyy_HH-mm) --account-name $(storageaccount) --account-key $(az storage account keys list -g $(resourcegroup) -n $(storageaccount) --query [0].value -o tsv) -s $(System.ArtifactsDirectory)/AM
-
-```
 | __Below follows the contents of Trivy Ignore File (.trivyignore):-__ |
 | --------- |
 
@@ -262,6 +112,4 @@ CVE-2021-23839
 | ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/y83jm776l1ux8xlqj1yc.png) |
 | __Note-__ The Only Reason we see 2 CVEs with Severity MEDIUM is because they are commented out in __.trivyignore__ file |
 
-Hope You Enjoyed the Session!!!
 
-__Stay Safe | Keep Learning | Spread Knowledge__
