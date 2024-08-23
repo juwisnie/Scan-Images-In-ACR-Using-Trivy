@@ -100,7 +100,7 @@ stages:
         azureSubscription: '$(serviceconn)'
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az storage blob upload-batch --destination $(sacontainerName) --account-name $(storageaccount) --source $(System.ArtifactsDirectory)'
+        inlineScript: 'az storage blob upload-batch --destination $(sacontainerName)/Trivy-scan --account-name $(storageaccount) --source $(System.ArtifactsDirectory)/AM/*'
     # - task: AzureCLI@1
     #   displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
     #   inputs:
@@ -109,19 +109,9 @@ stages:
     #     scriptLocation: inlineScript
     #     inlineScript: |
     #       az storage blob upload-batch -d $(sacontainername) --account-name $(storageaccount) -s $(System.ArtifactsDirectory)/AM
-    # - task: AzureFileCopy@3
-    #   displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
-    #   inputs:
-    #     SourcePath: $(System.DefaultWorkingDirectory)/AM/*
-    #     azureSubscription: '$(serviceconn)'
-    #     Destination: AzureBlob
-    #     storage: '$(storageaccount)'
-    #     ContainerName: '$(sacontainername)'
-    #     BlobPrefix: Trivy-scan
-    #     AdditionalArgumentsForBlobCopy: |
-    #       --recursive=true `
-    #       --overwrite=true
-    
+    ######################################
+# DEPLOY TO AKS:-
+######################################
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
