@@ -98,7 +98,7 @@ stages:
       displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
       inputs:
         azureSubscription: '$(serviceconn)'
-        scriptType: ps
+        #scriptType: ps
         scriptLocation: inlineScript
         inlineScript: |
           az storage blob upload-batch -d $(sacontainername)/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --account-key $(az storage account keys list -g $(resourcegroup) -n $(storageaccount) --query [0].value -o tsv) -s $(System.ArtifactsDirectory)/AM
