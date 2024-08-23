@@ -48,7 +48,7 @@ stages:
       artifact: manifests
     
 #######################################
-# Download and Install Aquasec Trivy:-
+# Download and Install Aquasec Trivy:-#
 #######################################
     - task: CmdLine@2
       displayName: DOWNLOAD AND INSTALL AQUASEC TRIVY
@@ -63,7 +63,7 @@ stages:
          pwd
 
 ##################################################################################
-# Execute Trivy Scan and Copy the Scan Results in Artifacts Staging Directory:-
+# Execute Trivy Scan and Copy the Scan Results in Artifacts Staging Directory:-  #
 ##################################################################################
     - task: CmdLine@2
       displayName: RUN AQUASEC TRIVY SCAN AND COPY TO ARTIFACTS STAGING DIRECTORY
@@ -74,7 +74,7 @@ stages:
           ls -l
           cp -rvf *.txt $(target)
 ##########################
-# Publish the Artifacts:-
+# Publish the Artifacts:-#
 ##########################
     - task: PublishBuildArtifacts@1
       displayName: PUBLISH ARTIFACTS
@@ -83,7 +83,7 @@ stages:
         artifactName: '$(artifact)'
 
 ######################################
-# Download the Published Artifacts:-
+# Download the Published Artifacts:- #
 ######################################
     - task: DownloadBuildArtifacts@1
       displayName: DOWNLOAD ARTIFACTS
@@ -92,7 +92,7 @@ stages:
         downloadType: 'single'
         downloadPath: '$(System.ArtifactsDirectory)'
 ###################################################################################
-# It works on Linux Build Agent because of the Date Format
+# It works on Linux Build Agent because of the Date Format                        #
 ###################################################################################
     - task: AzureCLI@2
       displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
@@ -100,7 +100,7 @@ stages:
         azureSubscription: '$(serviceconn)'
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az storage blob upload-batch --destination $(sacontainerName)/Trivy-scan --account-name $(storageaccount) --source $(System.ArtifactsDirectory)/AM/*'
+        inlineScript: 'az storage blob upload-batch --destination $(sacontainerName)/Trivy-scan/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --source $(System.ArtifactsDirectory)/AM/*'
     # - task: AzureCLI@1
     #   displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
     #   inputs:
@@ -109,8 +109,8 @@ stages:
     #     scriptLocation: inlineScript
     #     inlineScript: |
     #       az storage blob upload-batch -d $(sacontainername) --account-name $(storageaccount) -s $(System.ArtifactsDirectory)/AM
-    ######################################
-# DEPLOY TO AKS:-
+######################################
+# DEPLOY TO AKS:-                    #
 ######################################
 - stage: Deploy
   displayName: Deploy stage
