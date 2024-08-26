@@ -100,7 +100,7 @@ stages:
         azureSubscription: '$(serviceconn)'
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az storage blob upload-batch --destination $(sacontainerName)/Trivy-scan/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --source $(System.ArtifactsDirectory)/AM'
+        inlineScript: 'az storage blob upload-batch --destination $(sacontainerName)/Trivy-scan/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --source $(System.ArtifactsDirectory) --exclude-pattern "*.yml"'
     # - task: AzureCLI@1
     #   displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
     #   inputs:
