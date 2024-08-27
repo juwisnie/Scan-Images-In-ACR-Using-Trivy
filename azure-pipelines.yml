@@ -95,7 +95,7 @@ stages:
         downloadType: 'single'
         downloadPath: '$(System.ArtifactsDirectory)'
 ###################################################################################
-# It works on Linux Build Agent because of the Date Format                        #
+# Copy Reports to Blob Storage in the folder Trivy-scan with timestamp            #
 ###################################################################################
     - task: AzureCLI@2
       displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
@@ -104,12 +104,30 @@ stages:
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
         inlineScript: 'az storage blob upload-batch --destination $(sacontainerName)/Trivy-scan/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --source $(System.ArtifactsDirectory) --pattern "*.txt"'
+##############################################################
+# Verify if the scan report returns any high or critical CVE #
+##############################################################
+  - job: CheckScanReport
+    dependsOn: Build
+    steps:
+    - download: current
+      artifact: AM
+
+    - script: |
+        total=$(sed -n '3p' $(Pipeline.Workspace)/AM/high-critical.txt | grep -oP '(?<=Total: )\d+')
+        if [ "$total" -le 20 ]; then
+          echo "##vso[task.setvariable variable=scanReport]success"
+        else
+          echo "##vso[task.setvariable variable=scanReport]fail"
+        fi
+      displayName: 'Read Scan Report'
 ######################################
 # DEPLOY TO AKS:-                    #
 ######################################
 - stage: Deploy
   displayName: Deploy stage
-  dependsOn: Build
+  #dependsOn: Build
+  condition: eq(variables['scanReport'], 'success')
 
   jobs:
   - deployment: Deploy
