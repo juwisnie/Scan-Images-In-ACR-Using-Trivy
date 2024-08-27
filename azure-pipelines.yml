@@ -65,6 +65,8 @@ stages:
 ##################################################################################
 # Execute Trivy Scan and Copy the Scan Results in Artifacts Staging Directory:-  #
 ##################################################################################
+# Is possible to ignore some CVEs adding in the repository file ".trivyignore"
+# Command example: trivy image --ignore .trivyignore
     - task: CmdLine@2
       displayName: RUN AQUASEC TRIVY SCAN AND COPY TO ARTIFACTS STAGING DIRECTORY
       inputs:
@@ -101,14 +103,6 @@ stages:
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
         inlineScript: 'az storage blob upload-batch --destination $(sacontainerName)/Trivy-scan/$(date "+%d-%m-%Y_%H-%M-%S") --account-name $(storageaccount) --source $(System.ArtifactsDirectory) --pattern "*.txt"'
-    # - task: AzureCLI@1
-    #   displayName: COPY AQUASEC TRIVY SCAN REPORTS TO BLOB STORAGE
-    #   inputs:
-    #     azureSubscription: '$(serviceconn)'
-    #     #scriptType: ps
-    #     scriptLocation: inlineScript
-    #     inlineScript: |
-    #       az storage blob upload-batch -d $(sacontainername) --account-name $(storageaccount) -s $(System.ArtifactsDirectory)/AM
 ######################################
 # DEPLOY TO AKS:-                    #
 ######################################
