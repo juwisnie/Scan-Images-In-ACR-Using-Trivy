@@ -15,7 +15,6 @@ variables:
   imageRepository: 'nginxscanned'
   containerRegistry: 'fluxv2.azurecr.io'
   tag: '$(Build.BuildId)'
-  imagePullSecret: $(imagePullSecret)
   storageaccount: 'poctrivyscan'
   sacontainername: 'trivy-scan-reports'
   dockerfilePath: '**/Dockerfile'
