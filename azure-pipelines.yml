@@ -12,17 +12,17 @@ variables:
 
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '916f3fb0-a701-494e-8f2c-73e1808a9f30'
-  imageRepository: 'nginxscanned'
-  containerRegistry: 'fluxv2.azurecr.io'
+  imageRepository: $(imageRepository)
+  containerRegistry: $(containerRegistry)
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'fluxv2201619d6-auth'
-  storageaccount: 'poctrivyscan'
-  sacontainername: 'trivy-scan-reports'
-  dockerfilePath: '**/Dockerfile'
+  imagePullSecret: $(imagePullSecret)
+  storageaccount: $(storageaccount)
+  sacontainername: $(sacontainername)
+  dockerfilePath: $(dockerfilePath)
   serviceconn: 'cicd-service-connection' 
   target: $(build.artifactstagingdirectory)
-  artifact: AM
-  resourcegroup: 'flux-demo'
+  artifact: $(artifact)
+  resourcegroup: $(resourcegroup)
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
