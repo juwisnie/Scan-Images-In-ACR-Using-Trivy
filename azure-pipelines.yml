@@ -16,13 +16,13 @@ variables:
   containerRegistry: 'fluxv2.azurecr.io'
   tag: '$(Build.BuildId)'
   imagePullSecret: $(imagePullSecret)
-  storageaccount: $(storageaccount)
-  sacontainername: $(sacontainername)
+  storageaccount: 'poctrivyscan'
+  sacontainername: 'trivy-scan-reports'
   dockerfilePath: '**/Dockerfile'
   serviceconn: 'cicd-service-connection' 
   target: $(build.artifactstagingdirectory)
-  artifact: $(artifact)
-  resourcegroup: $(resourcegroup)
+  artifact: AM
+  resourcegroup: 'flux-demo'
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
