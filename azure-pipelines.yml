@@ -18,7 +18,8 @@ variables:
   storageaccount: 'poctrivyscan'
   sacontainername: 'trivy-scan-reports'
   dockerfilePath: '**/Dockerfile'
-  serviceconn: 'cicd-service-connection' 
+  serviceconn: 'cicd-service-connection'
+  imagePullSecret: ''
   target: $(build.artifactstagingdirectory)
   artifact: AM
   resourcegroup: 'flux-demo'
@@ -122,7 +123,7 @@ stages:
             displayName: Create imagePullSecret
             inputs:
               action: createSecret
-              secretName: IMSecret
+              secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
 
           - task: KubernetesManifest@0
