@@ -12,8 +12,8 @@ variables:
 
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '916f3fb0-a701-494e-8f2c-73e1808a9f30'
-  imageRepository: $(imageRepository)
-  containerRegistry: $(containerRegistry)
+  imageRepository: 'nginxscanned'
+  containerRegistry: 'fluxv2.azurecr.io'
   tag: '$(Build.BuildId)'
   imagePullSecret: $(imagePullSecret)
   storageaccount: $(storageaccount)
