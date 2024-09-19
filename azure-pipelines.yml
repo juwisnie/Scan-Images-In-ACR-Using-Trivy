@@ -18,7 +18,7 @@ variables:
   imagePullSecret: $(imagePullSecret)
   storageaccount: $(storageaccount)
   sacontainername: $(sacontainername)
-  dockerfilePath: $(dockerfilePath)
+  dockerfilePath: '**/Dockerfile'
   serviceconn: 'cicd-service-connection' 
   target: $(build.artifactstagingdirectory)
   artifact: $(artifact)
