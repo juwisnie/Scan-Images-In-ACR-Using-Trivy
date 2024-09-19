@@ -19,7 +19,7 @@ variables:
   sacontainername: 'trivy-scan-reports'
   dockerfilePath: '**/Dockerfile'
   serviceconn: 'cicd-service-connection'
-  imagePullSecret: ''
+  imagePullSecret: 'fluxv2201619d6-auth'
   target: $(build.artifactstagingdirectory)
   artifact: AM
   resourcegroup: 'flux-demo'
